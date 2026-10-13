@@ -1,0 +1,6 @@
+pp/target/
+pp/node_modules/
+pp/.anchor/
+pp/test-ledger/
+pp/*.key
+pp/.env
