@@ -1,0 +1,26 @@
+name: ci
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  anchor-test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: pp } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.local/share/solana
+          key: sol-2.3.13-anchor-0.32.1-${{ hashFiles('pp/Cargo.lock') }}
+      - name: Install Solana CLI 2.3.13
+        run: |
+          [ -x ~/.local/share/solana/install/active_release/bin/solana ] || sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.13/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - name: Install Anchor CLI 0.32.1
+        run: command -v anchor || cargo install anchor-cli --version 0.32.1 --locked
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: solana-keygen new --no-bip39-passphrase -s -o ~/.config/solana/id.json
+      - run: npm ci
+      - run: anchor keys sync && anchor test
