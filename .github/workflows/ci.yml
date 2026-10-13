@@ -17,6 +17,8 @@ jobs:
         run: |
           [ -x ~/.local/share/solana/install/active_release/bin/solana ] || sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.13/install)"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - run: sudo apt-get update && sudo apt-get install -y libudev-dev pkg-config
+        working-directory: .
       - name: Install Anchor CLI 0.32.1
         run: command -v anchor || cargo install anchor-cli --version 0.32.1 --locked
       - uses: actions/setup-node@v4
